@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 public enum PaginaJSP {
   HOMEPAGE("index.jsp"), CADASTRO("cadastro.jsp"), LOGIN("login.jsp"),
   USUARIO("usuario.jsp"), FIO_FORM("fio.jsp"), FIO("fio.jsp"),
-  COMENTARIO_FORM("comentario.jsp");
+  COMENTARIO_FORM("comentario.jsp"), USUARIOS("usuarios.jsp");
   
   public final String jspFile, filePath;
   public static final String parent = "/jsp/";

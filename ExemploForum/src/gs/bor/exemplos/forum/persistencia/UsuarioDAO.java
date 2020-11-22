@@ -12,6 +12,7 @@ public class UsuarioDAO {
   // banquinho na memória mesmo, pra testar
   private final List<Usuario> usuarios;
   
+  
   public UsuarioDAO() {
     this.usuarios = new ArrayList<Usuario>();
   }
@@ -35,6 +36,17 @@ public class UsuarioDAO {
   // apelido e nome de usuário devem estar ambos livres
   public boolean podeCadastrar(String email, String apelido) {
     return this.porEmail(email) == null && this.porApelido(apelido) == null;
+  }
+  
+  // insere na lista de vez, retorna null se falhou
+  public Usuario cadastrar(String email, String apelido, String senha) {
+    if (this.podeCadastrar(email, apelido)) {
+      Usuario u = new Usuario(email, apelido, senha);
+      this.usuarios.add(u);
+      return u;
+    } else {
+      return null;
+    }
   }
   
   // testa a validez de um par (email, senha)

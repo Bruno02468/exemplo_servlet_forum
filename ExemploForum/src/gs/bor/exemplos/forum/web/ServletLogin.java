@@ -86,10 +86,12 @@ public class ServletLogin extends HttpServlet {
     String next = req.getParameter("next");
     Usuario u = usuarioDAO.tentaLogin(email, senha);
     if (u != null) {
+      // credenciais ok, redirecionar pra "próxima" página
       TokenSeguro t = tokenSeguroDAO.criar(u);
       t.injetar(resp);
       resp.sendRedirect(next);
     } else {
+      // credenciais não ok, continuar aqui
       WebUtils.pedirLogin(resp, next, true);
     }
   }

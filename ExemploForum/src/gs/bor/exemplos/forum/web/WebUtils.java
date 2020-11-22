@@ -22,7 +22,7 @@ public class WebUtils {
       if (c.getName() == TOKEN_COOKIE_NAME) {
         return Base64.getDecoder().decode(c.getValue());
       }
-    }
+    } 
     return null;
   }
   

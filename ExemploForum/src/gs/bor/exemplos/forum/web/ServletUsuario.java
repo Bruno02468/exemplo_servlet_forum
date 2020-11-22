@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import gs.bor.exemplos.forum.modelo.TokenSeguro;
+import gs.bor.exemplos.forum.modelo.Usuario;
 import gs.bor.exemplos.forum.persistencia.TokenSeguroDAO;
 import gs.bor.exemplos.forum.persistencia.UsuarioDAO;
 
@@ -15,7 +17,7 @@ import gs.bor.exemplos.forum.persistencia.UsuarioDAO;
 
 // ações GET:
 //   - /usuario/listar
-//   - /usuario/detalhes?apelido=APELIDO
+//   - /usuario/perfil?apelido=APELIDO
 //   - /usuario/cadastrar
 
 // ações POST:
@@ -27,9 +29,11 @@ public class ServletUsuario extends HttpServlet {
 
   private static final long serialVersionUID = -293378038323135052L;
   private UsuarioDAO usuarioDAO;
+  private TokenSeguroDAO tokenSeguroDAO;
 
   public void init() {
     this.usuarioDAO = UsuarioDAO.padrao;
+    this.tokenSeguroDAO = TokenSeguroDAO.padrao;
   }
 
   // ações get
@@ -38,13 +42,13 @@ public class ServletUsuario extends HttpServlet {
     String action = (String) req.getAttribute("fullPath");
     switch (action) {
     case "/usuario/listar":
-      //listarUsuarios(req, resp);
+      listarUsuarios(req, resp);
       break;
-    case "/usuario/detalhes":
-      //detalharUsuario(req, resp);
+    case "/usuario/perfil":
+      mostrarPerfil(req, resp);
       break;
     case "/usuario/cadastrar":
-      //mostraCadastro(req, resp);
+      mostrarCadastro(req, resp);
     default:
       resp.sendError(HttpServletResponse.SC_NOT_FOUND);
       break;
@@ -57,7 +61,7 @@ public class ServletUsuario extends HttpServlet {
     String action = (String) req.getAttribute("fullPath");
     switch (action) {
     case "/usuario/cadastro":
-      //tentaCadastro(req, resp);
+      tentaCadastro(req, resp);
       break;
     default:
       resp.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -65,10 +69,43 @@ public class ServletUsuario extends HttpServlet {
     }
   }
 
-  // mostra a tela de login
-  public void mostraLogin(HttpServletRequest req, HttpServletResponse resp)
+  // simplesmente mostra a tela de usuários
+  public void listarUsuarios(HttpServletRequest req, HttpServletResponse resp)
       throws IOException, ServletException {
-    PaginaJSP.LOGIN.encaminhar(req, resp);
+    PaginaJSP.USUARIOS.encaminhar(req, resp);
+  }
+  
+  // mostra o perfil de um usuário
+  public void mostrarPerfil(HttpServletRequest req, HttpServletResponse resp)
+      throws IOException, ServletException {
+    Usuario u = usuarioDAO.porApelido(req.getParameter("apelido"));
+    req.setAttribute("usuario", u);
+    PaginaJSP.USUARIO.encaminhar(req, resp);
+  }
+  
+  // mostra a página de cadastro
+  public void mostrarCadastro(HttpServletRequest req, HttpServletResponse resp)
+      throws IOException, ServletException {
+    PaginaJSP.CADASTRO.encaminhar(req, resp);
+  }
+  
+  // usuário tentou se cadastrar (formulário)
+  public void tentaCadastro(HttpServletRequest req, HttpServletResponse resp)
+      throws IOException, ServletException {
+    String email = req.getParameter("email");
+    String apelido = req.getParameter("apelido");
+    String senha = req.getParameter("senha");
+    Usuario novo = usuarioDAO.cadastrar(email, apelido, senha);
+    if (usuarioDAO.podeCadastrar(email, apelido)) {
+      // cadastro ok! gerar um token, adicionar, e redirecionar pra homepage
+      TokenSeguro t = tokenSeguroDAO.criar(novo);
+      t.injetar(resp);
+      PaginaJSP.HOMEPAGE.encaminhar(req, resp);
+    } else {
+      // cadastro falhou! setar mensagem de erro e prosseguir continuar aqui
+      req.setAttribute("erro", "Email e/ou apelido já estão em uso!");
+      PaginaJSP.CADASTRO.encaminhar(req, resp);
+    }
   }
 
 }

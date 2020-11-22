@@ -9,7 +9,7 @@ public class Usuario {
   private LocalDateTime registradoQuando, ultimoAcesso;
   private byte[] hash, salt; // persistência de senha -- hasheada!
   
-  private Usuario(String email, String apelido, String senha) {
+  public Usuario(String email, String apelido, String senha) {
     this.email = email;
     this.apelido = apelido;
     this.setSenha(senha);
