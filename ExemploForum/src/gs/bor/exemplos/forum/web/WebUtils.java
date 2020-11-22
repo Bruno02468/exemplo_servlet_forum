@@ -18,11 +18,19 @@ public class WebUtils {
   
   // puxa o segredo (token) de uma requisição
   public static byte[] extrairSegredo(HttpServletRequest req) {
+    String val = extrairSegredoCodificado(req);
+    if (val == null) return null;
+    return Base64.getDecoder().decode(val);
+  }
+  
+  // retorna o segredo codificado de uma requisição
+  public static String extrairSegredoCodificado(HttpServletRequest req) {
+    if (req.getCookies() == null) return null;
     for (Cookie c : req.getCookies()) {
-      if (c.getName() == TOKEN_COOKIE_NAME) {
-        return Base64.getDecoder().decode(c.getValue());
+      if (c.getName().equals(TOKEN_COOKIE_NAME)) {
+        return c.getValue();
       }
-    } 
+    }
     return null;
   }
   
@@ -41,7 +49,7 @@ public class WebUtils {
       String s = URLEncoder.encode(next, StandardCharsets.UTF_8.toString());
       String k = "";
       if (failed) k = "&failed=true";
-      resp.sendRedirect("login?next=" + s + k);
+      resp.sendRedirect("../login/?next=../" + s + k);
     } catch (UnsupportedEncodingException e) {
       // se UTF-8 não for suportado, temos problemas maiores.
       e.printStackTrace();

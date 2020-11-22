@@ -15,6 +15,7 @@ public class UsuarioDAO {
   
   public UsuarioDAO() {
     this.usuarios = new ArrayList<Usuario>();
+    this.cadastrar("admin@example.com", "admin", "admin");
   }
   
   // pesquisar o usuário com um certo email
@@ -52,6 +53,7 @@ public class UsuarioDAO {
   // testa a validez de um par (email, senha)
   public Usuario tentaLogin(String email, String senha) {
     Usuario tgt = porEmail(email);
+    System.out.println(tgt);
     if (tgt == null || !tgt.senhaBate(senha)) return null;
     return tgt;
   }

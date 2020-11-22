@@ -18,19 +18,22 @@ public class TokenSeguroDAO {
   }
   
   // retorna a qual usuário corresponde um token
-  public Usuario logado(byte[] teste) {
+  public Usuario logado(String dele) {
     for (TokenSeguro token : this.tokens) {
-      if (token.getSegredo().equals(teste) && !token.isRevogado()) {
+      System.out.println(token);
+      String meu = token.segredoCodificado();
+      if (meu.equals(dele) && !token.isRevogado()) {
         return token.getDono();
       }
     }
     return null;
   }
   
-  // revoga tokens correspondentes
-  public void revogar(byte[] segredo) {
+  //revoga tokens correspondentes
+  public void revogar(String segredinho) {
     for (TokenSeguro token : this.tokens) {
-      if (token.getSegredo().equals(segredo)) {
+      System.out.println(token);
+      if (token.segredoCodificado().equals(segredinho)) {
         token.revogar();
       }
     }

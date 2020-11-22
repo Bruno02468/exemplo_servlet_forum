@@ -41,18 +41,19 @@ public class ServletUsuario extends HttpServlet {
       throws IOException, ServletException {
     String action = (String) req.getAttribute("fullPath");
     switch (action) {
-    case "/usuario/listar":
-      listarUsuarios(req, resp);
-      break;
-    case "/usuario/perfil":
-      mostrarPerfil(req, resp);
-      break;
-    case "/usuario/cadastrar":
-      mostrarCadastro(req, resp);
-    default:
-      resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-      break;
-    }
+      case "/usuario/listar":
+        listarUsuarios(req, resp);
+        break;
+      case "/usuario/perfil":
+        mostrarPerfil(req, resp);
+        break;
+      case "/usuario/cadastrar":
+        mostrarCadastro(req, resp);
+        break;
+      default:
+        resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+        break;
+      }
   }
 
   // ações post
@@ -60,12 +61,12 @@ public class ServletUsuario extends HttpServlet {
       throws IOException, ServletException {
     String action = (String) req.getAttribute("fullPath");
     switch (action) {
-    case "/usuario/cadastro":
-      tentaCadastro(req, resp);
-      break;
-    default:
-      resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-      break;
+      case "/usuario/cadastro":
+        tentaCadastro(req, resp);
+        break;
+      default:
+        resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+        break;
     }
   }
 
@@ -96,11 +97,11 @@ public class ServletUsuario extends HttpServlet {
     String apelido = req.getParameter("apelido");
     String senha = req.getParameter("senha");
     Usuario novo = usuarioDAO.cadastrar(email, apelido, senha);
-    if (usuarioDAO.podeCadastrar(email, apelido)) {
+    if (novo != null) {
       // cadastro ok! gerar um token, adicionar, e redirecionar pra homepage
       TokenSeguro t = tokenSeguroDAO.criar(novo);
       t.injetar(resp);
-      PaginaJSP.HOMEPAGE.encaminhar(req, resp);
+      resp.sendRedirect("..");
     } else {
       // cadastro falhou! setar mensagem de erro e prosseguir continuar aqui
       req.setAttribute("erro", "Email e/ou apelido já estão em uso!");

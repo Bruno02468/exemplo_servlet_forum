@@ -40,10 +40,14 @@ public class ServletLogin extends HttpServlet {
     String action = (String) req.getAttribute("fullPath");
     switch (action) {
       case "/login":
+        resp.sendRedirect("../login/");
+        break;
+      case "/login/":
         mostraLogin(req, resp);
         break;
       case "/login/out":
         logOut(req, resp);
+        break;
       default:
         resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         break;
@@ -73,8 +77,10 @@ public class ServletLogin extends HttpServlet {
   // arranca o segredo e volta.
   public void logOut(HttpServletRequest req, HttpServletResponse resp)
       throws IOException, ServletException {
-    tokenSeguroDAO.revogar(WebUtils.extrairSegredo(req));
-    resp.sendRedirect(req.getParameter("next"));
+    tokenSeguroDAO.revogar(WebUtils.extrairSegredoCodificado(req));
+    String next = req.getParameter("next");
+    if (next == null) next = "../"; // assumir homepage
+    resp.sendRedirect(next);
   }
   
   
@@ -84,6 +90,7 @@ public class ServletLogin extends HttpServlet {
     String email = req.getParameter("email");
     String senha = req.getParameter("senha");
     String next = req.getParameter("next");
+    if (next == null) next = "../"; // assumir homepage
     Usuario u = usuarioDAO.tentaLogin(email, senha);
     if (u != null) {
       // credenciais ok, redirecionar pra "próxima" página

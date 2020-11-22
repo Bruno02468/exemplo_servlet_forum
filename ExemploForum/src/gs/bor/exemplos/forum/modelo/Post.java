@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 // evita repetição de código entre Fio e Comentário, mas nunca é usada
 // explicitamente
 
-public class Post {
+public class Post implements Comparable<Post> {
   protected int id;
   protected Usuario autor;
   protected String conteudo;
@@ -26,7 +26,23 @@ public class Post {
     this.editado = LocalDateTime.now();
   }
   
-  //tudo isso aqui foi gerado quase automaticamente
+  // data de última atualização!
+  public LocalDateTime ultimaAtualizacao() {
+    if (this.editado != null) return this.editado;
+    return this.postado;
+  }
+  
+  // como implementamos Comparable<Post>, devemos providenciar uma função
+  // comparatriz informando se um outro Post deve vir antes, "dane-se", ou
+  // depois de outro na ocasião de um ordenamento.
+  // se quisermos usar outras lógicas de ordenamento, teremos que usar um
+  // Comparator customizado!
+  @Override
+  public int compareTo(Post outro) {
+    return this.ultimaAtualizacao().compareTo(outro.ultimaAtualizacao());
+  }
+  
+  // tudo isso abaixo foi gerado quase automaticamente
 
   public Usuario getAutor() {
     return autor;
@@ -60,4 +76,5 @@ public class Post {
   public int getId() {
     return id;
   }
+  
 }

@@ -2,6 +2,8 @@ package gs.bor.exemplos.forum.modelo;
 
 import java.time.LocalDateTime;
 
+import org.apache.tomcat.util.codec.binary.Base64;
+
 import gs.bor.exemplos.forum.util.Seguranca;
 
 public class Usuario {
@@ -24,13 +26,22 @@ public class Usuario {
   
   // setar senha, atualizando hash e salt
   public void setSenha(String senha) {
+    System.out.println(this.toString() + " tem senha \"" + senha + "\"");
     this.setSalt(Seguranca.nextSalt());
     this.setHash(Seguranca.hashear(senha.toCharArray(), this.salt));
   }
   
   // essa é a minha senha?
   public boolean senhaBate(String senha) {
-    return this.hash == Seguranca.hashear(senha.toCharArray(), this.salt);
+    String esta = Base64.encodeBase64String(this.hash);
+    byte[] hb = Seguranca.hashear(senha.toCharArray(), this.salt);
+    String aquela = Base64.encodeBase64String(hb);
+    return esta.equals(aquela);
+  }
+  
+  // forma apresentável do usuário
+  public String toString() {
+    return this.apelido + " <" + this.email + ">";
   }
   
   // tudo daqui pra baixo foi gerado 100% automaticamente

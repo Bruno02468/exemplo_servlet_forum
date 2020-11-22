@@ -1,0 +1,44 @@
+@charset "UTF-8";
+
+.center {
+  text-align: center;
+}
+
+.left {
+  text-align: left;
+}
+
+.right {
+  text-align: right;
+}
+
+a {
+  font-weight: bold;
+  display: inline-block !important;
+}
+
+.u-half-width, .thin-form>div>div>* {
+  width: 50%;
+  max-width: 50%;
+  box-sizing: border-box;
+}
+
+.large-form>div>div>* {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+#conteudo {
+  height: 15em;
+}
+
+
+label {
+  display: inline-block;
+  text-align: center;
+}
+
+.err {
+  color: red;
+}

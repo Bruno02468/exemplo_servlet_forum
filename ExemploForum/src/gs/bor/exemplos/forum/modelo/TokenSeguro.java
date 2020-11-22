@@ -1,5 +1,7 @@
 package gs.bor.exemplos.forum.modelo;
 
+import java.io.IOException;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,13 +26,28 @@ public class TokenSeguro {
   }
   
   // colocar esse cookie numa resposta http
-  public void injetar(HttpServletResponse resp) {
-    resp.addCookie(new Cookie(WebUtils.TOKEN_COOKIE_NAME, this.toString()));
+  public void injetar(HttpServletResponse resp) throws IOException {
+    Cookie tk = new Cookie(WebUtils.TOKEN_COOKIE_NAME, segredoCodificado());
+    tk.setMaxAge(30*24*3600);
+    // tk.setSecure(true);
+    tk.setPath("/");
+    resp.addCookie(tk);
   }
   
+  // codificação legal do segredo
+  public String segredoCodificado() {
+    return Base64.encodeBase64String(segredo);
+  }
+  
+  // representação boa
   @Override
   public String toString() {
-    return Base64.encodeBase64String(segredo);
+    final String s = "<TokenSeguro para %s, revogado=%s>";
+    return String.format(s, this.dono, this.revogado);
+  }
+
+  public boolean equals(TokenSeguro outro) {
+    return outro.segredoCodificado().equals(this.segredoCodificado());
   }
   
   // abaixo gerado automaticamente

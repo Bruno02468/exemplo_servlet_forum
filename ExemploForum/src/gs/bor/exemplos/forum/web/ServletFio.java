@@ -40,6 +40,7 @@ public class ServletFio extends HttpServlet {
     String action = (String) req.getAttribute("fullPath");
     switch (action) {
       case "/fio":
+      case "/fio/":
         mostraFio(req, resp);
         break;
       case "/fio/criar":

@@ -15,7 +15,7 @@ import javax.crypto.spec.PBEKeySpec;
 public class Seguranca {
   
   private static final Random rnd = new SecureRandom();
-  private static final int SALT_LEN = 256, ITERATIONS = 10000, KEY_LENGTH = 256;
+  private static final int SALT_LEN = 128, ITERATIONS = 10000, KEY_LENGTH = 256;
   
   // salt seguro e aleatório
   public static byte[] nextSalt() {
