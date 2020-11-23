@@ -105,7 +105,7 @@ public class ServletComentario extends HttpServlet {
         // yep! deletar comentário e voltar pro fio.
         forum.deletarComentario(forum.comentarioPorId(c.getPai().getId()));
       }
-      resp.sendRedirect("fio?id=" + c.getPai().getId());
+      resp.sendRedirect("../fio/?id=" + c.getPai().getId());
     }
   }
 
@@ -116,13 +116,21 @@ public class ServletComentario extends HttpServlet {
     int id_fio = Integer.parseInt(req.getParameter("id_fio"));
     if (u == null) {
       // usuário não logado, vamos exigir login primeiro
-      WebUtils.pedirLogin(resp, "fio?id=" + id_fio);
+      WebUtils.pedirLogin(resp, "fio/?id=" + id_fio);
     } else {
       // usuário logado, bora postar e redirecionar!
       Fio f = forum.fioPorId(id_fio);
       String conteudo = req.getParameter("conteudo");
       int id = forum.comentar(u, f, conteudo).getId();
-      resp.sendRedirect("../fio?id=" + id_fio + "#c" + id);
+      resp.sendRedirect("../fio/?id=" + id_fio + "#c-" + id);
+      // esse # acima no redirect é um "fragmento". a ideia é que isso indica
+      // pro navegador em qual parte da página ele deve "focar". por padrão,
+      // isso scrolla a página até revelar um elemento com um certo ID.
+      // você pode ver que, no fio.jsp, os comentários ficam em elementos com
+      // IDs da forma "c-ID_COMENTARIO"!
+      // fragmentos são super úteis pra passar informação pro navegador, ao
+      // da mesma forma que a querystring (?var=valvar2=val2) é útil pra passar
+      // informação ao SERVIDOR que responde a requisição.
     }
   }
 
@@ -142,7 +150,8 @@ public class ServletComentario extends HttpServlet {
         // yep! editar comentário e voltar pro fio.
         c.setConteudo(req.getParameter("conteudo"));
       }
-      resp.sendRedirect("../fio?id=" + id_fio + "#c" + id);
+      // tá na disney, tentando editar o comentário de outro.
+      resp.sendRedirect("../fio/?id=" + id_fio + "#c-" + id);
     }
   }
 }

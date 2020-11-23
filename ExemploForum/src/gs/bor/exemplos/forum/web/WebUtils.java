@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
 import javax.servlet.http.Cookie;
@@ -15,6 +17,18 @@ import javax.servlet.http.HttpServletResponse;
 public class WebUtils {
 
   public static final String TOKEN_COOKIE_NAME = "segredinho_forum";
+
+  public static final DateTimeFormatter formatoData
+    = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+  public static final DateTimeFormatter formatoHora
+    = DateTimeFormatter.ofPattern("HH:mm:ss");
+  
+  //funções pra retornar versões bem-formatadas das datas relevantes
+    
+   public static String formatarLDT(LocalDateTime data) {
+     return formatoData.format(data) + " às "
+       + formatoHora.format(data);
+   }
   
   // puxa o segredo (token) de uma requisição
   public static byte[] extrairSegredo(HttpServletRequest req) {

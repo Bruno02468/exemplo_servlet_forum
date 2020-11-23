@@ -25,7 +25,7 @@ outra página. Um bom lugar pra começar a olhar é o index.jsp.
     <link rel="stylesheet" type="text/css"
     href="//cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
     <link rel="stylesheet" type="text/css"
-    href="../static/simples.css">
+    href="${pageContext.request.contextPath}/static/simples.css">
   </head>
   <body>
     <div class="container">

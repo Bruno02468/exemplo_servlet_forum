@@ -1,6 +1,7 @@
 package gs.bor.exemplos.forum.web;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -64,6 +65,12 @@ public class ServletUsuario extends HttpServlet {
       case "/usuario/cadastro":
         tentaCadastro(req, resp);
         break;
+      case "/usuario/mudaApelido":
+        mudaApelido(req, resp);
+        break;
+      case "/usuario/mudaSenha":
+        mudaSenha(req, resp);
+        break;
       default:
         resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         break;
@@ -80,7 +87,7 @@ public class ServletUsuario extends HttpServlet {
   public void mostrarPerfil(HttpServletRequest req, HttpServletResponse resp)
       throws IOException, ServletException {
     Usuario u = usuarioDAO.porApelido(req.getParameter("apelido"));
-    req.setAttribute("usuario", u);
+    req.setAttribute("perfilado", u);
     PaginaJSP.USUARIO.encaminhar(req, resp);
   }
   
@@ -107,6 +114,30 @@ public class ServletUsuario extends HttpServlet {
       req.setAttribute("erro", "Email e/ou apelido já estão em uso!");
       PaginaJSP.CADASTRO.encaminhar(req, resp);
     }
+  }
+  
+  //usuário quer mudar a própria senha(formulário)
+  public void mudaSenha(HttpServletRequest req, HttpServletResponse resp)
+     throws IOException, ServletException {
+    Usuario atual = (Usuario) req.getAttribute("usuario");
+    // usuário inválido? vai pra homepage.
+    if (atual == null) resp.sendRedirect(req.getContextPath());
+    String senha = req.getParameter("senha");
+    atual.setSenha(senha);
+    resp.sendRedirect("./perfil?apelido="
+      + URLEncoder.encode(atual.getApelido(), "UTF-8"));
+  }
+  
+  //usuário quer mudar a própria senha(formulário)
+  public void mudaApelido(HttpServletRequest req, HttpServletResponse resp)
+     throws IOException, ServletException {
+    Usuario atual = (Usuario) req.getAttribute("usuario");
+    // usuário inválido? vai pra homepage.
+    if (atual == null) resp.sendRedirect(req.getContextPath());
+    String apelido = req.getParameter("apelido");
+    atual.setApelido(apelido);
+    resp.sendRedirect("./perfil?apelido="
+      + URLEncoder.encode(atual.getApelido(), "UTF-8"));
   }
 
 }

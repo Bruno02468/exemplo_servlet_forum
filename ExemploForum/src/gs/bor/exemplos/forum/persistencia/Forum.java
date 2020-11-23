@@ -1,5 +1,6 @@
 package gs.bor.exemplos.forum.persistencia;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -66,6 +67,7 @@ public class Forum {
     int novo_id = comentarios.size() + 1;
     Comentario c = new Comentario(novo_id, autor, pai, conteudo);
     comentarios.add(c);
+    pai.ativou();
     return c;
   }
   
@@ -79,12 +81,8 @@ public class Forum {
     this.comentarios.remove(c);
   }
   
-  // como a lista está em memória, iteramos no código. idealmente, ela estaria
-  // num MySQL ou algo assim, e seria muito, MUITO mais eficiente ordenar já na
-  // query ao banco.
-  public List<Fio> fiosMaisRecentes(int quantos) {
-    // a ideia é simples: pegar todos os fios e todos os comentários, e do mais
-    // recente, derivar os N fios com atividade mais recente.
+  // retorna uma lista com todos os posts (fios e comentários) mais recentes
+  public List<Post> postsMaisRecentes() {
     // como tanto fios quanto comentários são Post, que implementa Comparable,
     // podemos simplesmente juntar tudo no mesmo saco e ordenar :)
     List<Post> todos = new ArrayList<Post>(this.fios);
@@ -93,6 +91,16 @@ public class Forum {
     // como usamos o compareTo das datas dos posts, os primeiros na lista serão
     // os mais antigos, então invertemos.
     Collections.reverse(todos);
+    return todos;
+  }
+  
+  // como a lista está em memória, iteramos no código. idealmente, ela estaria
+  // num MySQL ou algo assim, e seria muito, MUITO mais eficiente ordenar já na
+  // query ao banco.
+  public List<Fio> fiosMaisRecentes(int quantos) {
+    // a ideia é simples: pegar todos os fios e todos os comentários, e do mais
+    // recente, derivar os N fios com atividade mais recente.
+    List<Post> todos = this.postsMaisRecentes();
     // finalmente, vamos iterar pela lista. quando encontrarmos um fio, vamos
     // colocá-lo na lista. quando encontrarmos um comentário, vamos colocar seu
     // pai na lista DESDE QUE ele já não esteja. paramos quando a lista de Posts
@@ -109,6 +117,63 @@ public class Forum {
       if (recentes.size() == quantos) break;
     }
     return recentes;
+  }
+  
+  // retorna a lista de postagens mais recentes de um usuário, quantos=0=>todos
+  public List<Post> postsMaisRecentes(Usuario autor, int quantos) {
+    // partir novamente dos posts mais recentes...
+    List<Post> todos = new ArrayList<Post>(this.postsMaisRecentes());
+    // filtrar pelo autor...
+    for (Post p : todos) if (p.getAutor() != autor) todos.remove(p);
+    // e limitar o tamanho
+    if (quantos > 0) {
+      while (todos.size() > quantos) todos.remove(todos.size()-1);
+    }
+    return todos;
+  }
+  
+  // meio na cara
+  public List<Fio> fiosPorAutor(Usuario autor, int quantos) {
+    // partir novamente dos posts mais recentes...
+    List<Fio> todos = new ArrayList<Fio>(this.fios);
+    // filtrar pelo autor...
+    for (Post p : todos) if (p.getAutor() != autor) todos.remove(p);
+    // e limitar o tamanho
+    if (quantos > 0) {
+      while (todos.size() > quantos) todos.remove(todos.size()-1);
+    }
+    return todos;
+  }
+  
+  // padrão zero
+  public List<Fio> fiosPorAutor(Usuario autor) {
+    return this.fiosPorAutor(autor, 0);
+  }
+
+  // meio na cara
+  public List<Comentario> comentariosPorAutor(Usuario autor, int quantos) {
+    // partir novamente dos posts mais recentes...
+    List<Comentario> todos = new ArrayList<Comentario>(this.comentarios);
+    // filtrar pelo autor...
+    for (Post p : todos) if (p.getAutor() != autor) todos.remove(p);
+    // e limitar o tamanho
+    if (quantos > 0) {
+      while (todos.size() > quantos)
+        todos.remove(todos.size() - 1);
+    }
+    return todos;
+  }
+
+  // padrão zero
+  public List<Comentario> comentariosPorAutor(Usuario autor) {
+    return this.comentariosPorAutor(autor, 0);
+  }
+  
+  // retorna o comentário mais recente de um fio. se não tiver, retorna o fio.
+  public Post ultimoRelacionado(Fio f) {
+    List<Comentario> cd = this.comentariosDe(f);
+    if (cd.size() > 0) return cd.get(cd.size()-1);
+    else return f;
   }
   
   

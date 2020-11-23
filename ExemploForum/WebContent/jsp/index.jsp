@@ -52,9 +52,18 @@
     <!--
       por fim, importamos as nossas próprias diretivas de estilo.
       como é um site simples, vamos usar um arquivo só!
+      
+      note que eu usei o contextPath, que todos podem enxergar, pra criar um
+      href absoluto com facilidade. e sim, isso pode ser feito com TODOS os
+      links do sistema. apesar disso, abusar de links absolutos é considerado má
+      prática, então eu só usei aqui.
+      
+      a longo prazo, ficar usando isso em todos os redirecionamentos, forwards
+      e links do sistema só ia deixar tudo mais chato e engessado. além disso,
+      aprender como funcionam links relativos é essencial.
     -->
     <link rel="stylesheet" type="text/css"
-    href="./static/simples.css">
+    href="${pageContext.request.contextPath}/static/simples.css">
   </head>
   <body>
     <!-- todos os elementos do skeleton devem ficar dentro de um .container -->
@@ -80,6 +89,11 @@
             GitHub!
           </a>
           <!-- target="_blank" faz o link abrir em uma nova guia -->
+          <br>
+          <br>
+          Alguns links úteis:
+          <a href="./fio/listar">lista de fios</a>,
+          <a href="./usuario/listar">lista de usuários</a>.
         </div>
       </div>
       <hr>
@@ -97,7 +111,7 @@
           <b>Fios com atualização mais recente:</b>
           <br>
           <br>
-          <ul>
+          <ul class="left">
             <!--
               loop no JSP. note a expressão EL contendo o parâmetro que o
               o servlet filtro inseriu, e o nome da variável de loop.
@@ -112,11 +126,24 @@
                   ataque chama XSS, e é muito efetivo em sites feitos por
                   iniciantes, porque é geralmente muito fácil de prevenir!
                 -->
-                <a href="/fio/?id=${fio.id}">
+                <a href="./fio/?id=${fio.id}">
                   "<c:out value="${fio.titulo}" />"
                 </a>
-                por ${fio.autor.apelido} - ${forum.comentariosDe(fio).size()}
-                comentários (última atualização: ${fio.ultimaAtualizacao()})
+                por
+                <jsp:include page="snippets/link_usuario.jsp">
+                  <jsp:param name="u_email" value="${fio.autor.email}" />
+                </jsp:include>
+                <ul>
+                  <li>
+                    ${forum.comentariosDe(fio).size()} comentários
+                  </li>
+                  <li>
+                    Postado em: ${fio.quandoPostou()}
+                  </li>
+                  <li>
+                    Última atualização: ${fio.quandoAtualizou()}
+                  </li>
+                </ul>
                 <!--
                   também note que não estamos acessando o atributo "titulo" do
                   fio diretamente. ele é privado (veja a classe Fio)! isso na
@@ -128,7 +155,7 @@
             </c:forEach>
             <c:if test="${forum.fiosMaisRecentes(5).size() == 0}">
               <!-- vazio! -->
-              <i>Nenhuma atividade recente.</i>
+              <li><i>Nenhuma atividade recente.</i></li>
             </c:if>
             <!-- sim, um espertalhão teria usado c:set. mas vamos com calma. -->
           </ul>
@@ -150,7 +177,7 @@
               <br>
               <br>
               <!-- formulário de login -->
-              <form action="./login/go" method="post">
+              <form action="login/go" method="post">
                 <b>E-mail:</b>
                 <input type="email" name="email">
                 <br>
@@ -165,14 +192,15 @@
             </c:when>
             <c:otherwise>
               <!-- usuário está logado -->
-              Logado como
-              <a href="./usuario/perfil?apelido=${usuario.apelido}">
-                <c:out value="${usuario.apelido}" />
-              </a>.
+              Logado como <b><c:out value="${usuario.apelido}" /></b>.
               <br>
               <br>
-              <a class="button" href="./login/out">Logout</a><br>
+              <a href="./usuario/perfil?apelido=${usuario.apelido}"
+              class="button">
+                Meu perfil
+              </a><br>
               <a class="button" href="./fio/criar">Postar fio</a><br>
+              <a class="button" href="./login/out">Logout</a><br>
             </c:otherwise>
           </c:choose>
         </div>

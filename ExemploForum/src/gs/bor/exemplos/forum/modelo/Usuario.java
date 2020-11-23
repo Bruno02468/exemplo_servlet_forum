@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.apache.tomcat.util.codec.binary.Base64;
 
 import gs.bor.exemplos.forum.util.Seguranca;
+import gs.bor.exemplos.forum.web.WebUtils;
 
 public class Usuario {
   private String email, apelido;
@@ -24,6 +25,16 @@ public class Usuario {
     this.setUltimoAcesso(LocalDateTime.now());
   }
   
+  // data de cadastro, formatada
+  public String quandoCadastrou() {
+    return WebUtils.formatarLDT(this.registradoQuando);
+  }
+  
+  // último acesso, formatado
+  public String quandoAcessou() {
+    return WebUtils.formatarLDT(this.ultimoAcesso);
+  }
+  
   // setar senha, atualizando hash e salt
   public void setSenha(String senha) {
     System.out.println(this.toString() + " tem senha \"" + senha + "\"");
@@ -40,8 +51,14 @@ public class Usuario {
   }
   
   // forma apresentável do usuário
+  @Override
   public String toString() {
     return this.apelido + " <" + this.email + ">";
+  }
+  
+  // retorna true se dois usuários são a mesma pessoa (mesmo email).
+  public boolean equals(Usuario outro) {
+    return this.email.equals(outro.getEmail());
   }
   
   // tudo daqui pra baixo foi gerado 100% automaticamente

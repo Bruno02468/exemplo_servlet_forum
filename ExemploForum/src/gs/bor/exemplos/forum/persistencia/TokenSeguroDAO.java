@@ -20,7 +20,6 @@ public class TokenSeguroDAO {
   // retorna a qual usuário corresponde um token
   public Usuario logado(String dele) {
     for (TokenSeguro token : this.tokens) {
-      System.out.println(token);
       String meu = token.segredoCodificado();
       if (meu.equals(dele) && !token.isRevogado()) {
         return token.getDono();

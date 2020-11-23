@@ -13,31 +13,16 @@ outra página. Um bom lugar pra começar a olhar é o index.jsp.
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!-- 
-  Aqui, um padrão de design diferente. Ao invés de criarmos um JSP pra criar
-  e outro pra editar... já percebeu que eles são largamente os mesmos? Não muda
-  quase nada! Que tal a gente usar o mesmo JSP, e inserir algumas coisas a mais
-  ou diferentes na ocasião de estarmos editando?
+  Este arquivo é semelhante ao formulario_fio.jsp, mas como cometários são
+  criados direto na página do fio (fio.jsp), aqui não temos os dois casos,
+  apenas edição.
   
-  Quando estivermos editando, o servlet de fio nos vai passar um atributo "fio".
+  se o comentário não existir, teremos uma situação meio estranha.
+  vamos só redirecionar pra homepage por enquanto.
 -->
-<c:choose>
-  <c:when test="${fio != null}">
-    <!-- estamos editando um fio -->
-    <c:set var="inf" value="Editar" />
-    <c:set var="action" value="edita" />
-    <c:set var="btn" value="Salvar alterações!" />
-    <c:set var="backtext" value="Cancelar e voltar ao fio" />
-    <c:set var="backlink" value="./?id=${fio.id}" />
-  </c:when>
-  <c:otherwise>
-    <!-- estamos criando um fio -->
-    <c:set var="inf" value="Criar" />
-    <c:set var="action" value="cria" />
-    <c:set var="btn" value="Postar fio!" />
-    <c:set var="backtext" value="Cancelar e voltar à página inicial" />
-    <c:set var="backlink" value="../" />
-  </c:otherwise>
-</c:choose>
+<c:if test="${comentario == null}">
+  <c:redirect url=".." />
+</c:if>
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
@@ -58,39 +43,38 @@ outra página. Um bom lugar pra começar a olhar é o index.jsp.
       <div class="row center">
         <div class="twelve columns">
           <h3><a href="../">Fórum Exemplo</a></h3>
-          <h5>${inf} fio</h5>
-          <jsp:include page="snippets/linha_logado.jsp" />
+          <h5>
+            Editando comentário #${comentario.id} no fio
+            <jsp:include page="snippets/permalink.jsp">
+              <jsp:param name="lid" value="${comentario.pai.id}" />
+              <jsp:param name="ltipo" value="fio" />
+              <jsp:param name="lprefixo" value="../fio/" />
+              <jsp:param name="showEmail" value="true" />
+            </jsp:include>
+          </h5>
           <hr>
           <br>
         </div>
       </div>
-      <form action="${action}" method="post" class="large-form">
-        <c:if test="${fio != null}">
-          <!-- caso estejamos editando um fio, temos que informar o ID -->
-          <input type="hidden" name="id" value="${fio.id}">
-        </c:if>
-        <div class="row center">
-          <div class="twelve columns center">
-            <label for="titulo">Título:</label>
-            <br>
-            <input type="text" name="titulo" id="titulo"
-            value="<c:out value="${fio.titulo}" />">
-          </div>
-        </div>
+      <form action="edita" method="post" class="large-form">
+        <input type="hidden" name="id" value="${comentario.id}">
         <div class="row center">
           <div class="twelve columns center">
             <label for="conteudo">Corpo do texto:</label>
             <br>
             <textarea name="conteudo"
-            id="conteudo"><c:out value="${fio.conteudo}" /></textarea>
+            id="conteudo"><c:out value="${comentario.conteudo}" /></textarea>
           </div>
         </div>
         <div class="row center">
-          <div class="six columns">
-            <input type="submit" value="${btn}">
+          <div class="six columns left">
+            <input type="submit" value="Salvar alterações!">
           </div>
-          <div class="six columns">
-            <a href="${backlink}" class="button">${backtext}</a>
+          <div class="six columns left">
+            <a href="../fio/?id=${comentario.pai.id}#c-${comentario.id}"
+            class="button">
+              Cancelar e voltar ao fio
+            </a>
           </div>
         </div>
       </form>

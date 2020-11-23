@@ -12,10 +12,18 @@ public class UsuarioDAO {
   // banquinho na memória mesmo, pra testar
   private final List<Usuario> usuarios;
   
-  
+  // inicializar a lista em memória, e inserir dois usuários "padrão".
+  // não se deixe enganar pelo nome, eu não inseri nenhuma funcionalidade de
+  // administração, e provavelmente nem vou.
   public UsuarioDAO() {
     this.usuarios = new ArrayList<Usuario>();
     this.cadastrar("admin@example.com", "admin", "admin");
+    this.cadastrar("usuario@example.com", "usuario", "usuario");
+  }
+  
+  // retorna a lista
+  public List<Usuario> todosUsuarios() {
+    return this.usuarios;
   }
   
   // pesquisar o usuário com um certo email
@@ -50,13 +58,12 @@ public class UsuarioDAO {
     }
   }
   
-  // testa a validez de um par (email, senha)
+  // testa a corretude de um par (email, senha)
   public Usuario tentaLogin(String email, String senha) {
     Usuario tgt = porEmail(email);
     System.out.println(tgt);
     if (tgt == null || !tgt.senhaBate(senha)) return null;
     return tgt;
   }
-  
   
 }

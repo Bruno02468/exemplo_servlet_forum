@@ -39,9 +39,11 @@ public class ServletFio extends HttpServlet {
       throws IOException, ServletException {
     String action = (String) req.getAttribute("fullPath");
     switch (action) {
-      case "/fio":
       case "/fio/":
         mostraFio(req, resp);
+        break;
+      case "/fio/listar":
+        listaFios(req, resp);
         break;
       case "/fio/criar":
         mostraCriarFio(req, resp);
@@ -82,6 +84,12 @@ public class ServletFio extends HttpServlet {
     req.setAttribute("fio", f);
     PaginaJSP.FIO.encaminhar(req, resp);
   }
+  
+  //mostrar um fio
+  public void listaFios(HttpServletRequest req, HttpServletResponse resp)
+      throws IOException, ServletException {
+    PaginaJSP.FIOS.encaminhar(req, resp);
+  }
 
   // redireciona o usuário pro formulario de criar fio
   public void mostraCriarFio(HttpServletRequest req, HttpServletResponse resp)
@@ -112,7 +120,7 @@ public class ServletFio extends HttpServlet {
         PaginaJSP.FIO_FORM.encaminhar(req, resp);
       } else {
         // não é o autor!
-        resp.sendRedirect("?id=" + id_fio);
+        resp.sendRedirect("./?id=" + id_fio);
       }
     }
   }
@@ -134,7 +142,7 @@ public class ServletFio extends HttpServlet {
         resp.sendRedirect("..");
       } else {
         // não é o autor!
-        resp.sendRedirect("?id=" + id_fio);
+        resp.sendRedirect("./?id=" + id_fio);
       }
     }
   }
@@ -151,7 +159,7 @@ public class ServletFio extends HttpServlet {
       String titulo = req.getParameter("titulo");
       String conteudo = req.getParameter("conteudo");
       Fio f = forum.postar(u, titulo, conteudo);
-      resp.sendRedirect("?id=" + f.getId());
+      resp.sendRedirect("./?id=" + f.getId());
     }
   }
 
@@ -172,7 +180,7 @@ public class ServletFio extends HttpServlet {
         f.setConteudo(req.getParameter("conteudo"));
       }
     }
-    resp.sendRedirect("?id=" + id_fio);
+    resp.sendRedirect("./?id=" + id_fio);
   }
 
 }
